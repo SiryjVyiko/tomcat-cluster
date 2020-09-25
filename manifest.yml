@@ -10,5 +10,5 @@ nodeGroupAlias:
   ${settings.nodeGroup}: cp
                                                                                                                                                                               
 onInstall:
-  - cmd[${this:cp}]: yum -y install xmlstarlet
+  - cmd[${this:cp}]: yum -y install xmlstarlet; sed -i '/<\/Host>/e curl ${baseUrl}/conf/cluster.tpl' /opt/tomcat/conf/server.xml
     user: root
