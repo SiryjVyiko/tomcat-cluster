@@ -30,3 +30,8 @@ onAfterScaleOut[cp]:
 
 onBeforeDelete:
   - cmd[cp]: xmlstarlet ed --inplace -P -d Server/Service/Engine/Host/Cluster /opt/tomcat/conf/server.xml
+
+actions:
+  prepareNode
+  - cmd[${this}]: yum -y install xmlstarlet; sed -i '/<\/Host>/e curl ${baseUrl}/conf/cluster.tpl' /opt/tomcat/conf/server.xml
+    user:root
