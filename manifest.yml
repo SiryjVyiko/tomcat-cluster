@@ -1,0 +1,14 @@
+type: update                                                                                                                                                                                                                    
+version: 1.6.1                                                                                                                                                                                                                  
+id: tomcat_cluster                                                                                                                                                                                                              
+baseUrl: https://raw.githubusercontent.com/SiryjVyiko/tomcat-cluster/master                                                                                                                                            
+description:                                                                                                                                                                                                                     
+  short: Tomcat Cluster Logic (Beta)                                                                                                                                                                                                                                 
+name: Tomcat Cluster Logic
+
+nodeGroupAlias:
+  ${settings.nodeGroup}: cp
+                                                                                                                                                                              
+onInstall:
+  - cmd[${this:cp}]: yum -y install xmlstarlet
+    user: root
