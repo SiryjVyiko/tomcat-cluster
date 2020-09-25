@@ -27,3 +27,6 @@ onAfterScaleOut[cp]:
       - forEach(clnode:event.response.nodes):
           - cmd[${@wnode.id}]: MEMBER_ID=$(echo ${@clnode.intIP} | sed 's/\./,/g'); grep -q "Member.*host=\"${@clnode.intIP}\"" /opt/tomcat/conf/server.xml || sed -i "/<\/Membership>/i \<Member className=\"org.apache.catalina.tribes.membership.StaticMember\" port=\"4004\" host=\"${@clnode.intIP}\" uniqueId=\"{0,1,2,3,4,5,6,7,8,9,10,11,$MEMBER_ID}\" \/>" /opt/tomcat/conf/server.xml 
             user: root
+
+onBeforeDelete:
+  - cmd[cp]: xmlstarlet ed --inplace -P -d Server/Service/Engine/Host/Cluster /opt/tomcat/conf/server.xml
