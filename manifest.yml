@@ -10,6 +10,8 @@ globals:
   serverConfig: /opt/tomcat/conf/server.xml
                                                                                                                                                                               
 onInstall:
+  - installXmlUtility: ${nodes.cp.join(id,)}
+  - removeClusterConfig
   - applyClusterTemplate: ${nodes.cp.join(id,)}
   - forEach(wnode:nodes.cp):
       - cmd[${@wnode.id}]: sed -i "s/defaultHost=\"localhost\"/defaultHost=\"${@wnode.intIP}\"/g" ${globals.serverConfig}; sed -i "s/Host[[:space:]]*name=\"localhost\"/Host name=\"${@wnode.intIP}\"/g" ${globals.serverConfig}
@@ -19,8 +21,7 @@ onInstall:
             user: root
             
 onBeforeScaleIn[cp]:
-  - forEach(clnode:event.response.nodes):
-      - cmd[cp]: sed -i '/Member.*host="${@clnode.intIP}"/d' ${globals.serverConfig}
+  - removeNodes: ${event.response.nodes.join(id,)}
       
 onAfterScaleOut[cp]:
   - cmd[event.response.nodes]: yum -y install xmlstarlet; sed -i '/<\/Host>/e curl ${baseUrl}/conf/cluster.tpl' ${globals.serverConfig}
@@ -29,17 +30,29 @@ onAfterScaleOut[cp]:
       - forEach(clnode:event.response.nodes):
           - cmd[${@wnode.id}]: MEMBER_ID=$(echo ${@clnode.intIP} | sed 's/\./,/g'); grep -q "Member.*host=\"${@clnode.intIP}\"" ${globals.serverConfig}|| sed -i "/<\/Membership>/i \<Member className=\"org.apache.catalina.tribes.membership.StaticMember\" port=\"4004\" host=\"${@clnode.intIP}\" uniqueId=\"{0,1,2,3,4,5,6,7,8,9,10,11,$MEMBER_ID}\" \/>" ${globals.serverConfig}
             user: root
+            
+onAfterClone:
+  - script: delete MANIFEST.id; return {result:0, jps:MANIFEST};
+  - install: ${response.jps}
+    envName: ${event.response.env.envName}
 
 onBeforeDelete:
-  - cmd[cp]: disableClustering
+  - removeClusterConfig
 
 actions:
-  applyClusterTemplate:
-  - cmd[${this}]: yum -y install xmlstarlet; sed -i '/<\/Host>/e curl ${baseUrl}/conf/cluster.tpl' ${globals.serverConfig};
-    user:root
+  installXmlUtility:
+    - cmd[${this}]: yum -y install xmlstarlet;
     
-  disableClustering:
-  - cmd[cp]: xmlstarlet ed --inplace -P -d Server/Service/Engine/Host/Cluster ${globals.serverConfig}
+  applyClusterTemplate:
+    - cmd[${this}]:  sed -i '/<\/Host>/e curl ${baseUrl}/conf/cluster.tpl' ${globals.serverConfig};
+      user: root
+    
+  removeClusterConfig:
+    - cmd[cp]: xmlstarlet ed --inplace -P -d Server/Service/Engine/Host/Cluster ${globals.serverConfig}
   
   cleanupNodes:
-  - cmd[cp]: sed -i "/Member.*host=.*uniqueId=.*/d" ${globals.serverConfig}
+    - cmd[cp]: sed -i "/Member.*host=.*uniqueId=.*/d" ${globals.serverConfig}
+  
+  removeNodes:
+    - forEach(clnode:${this}):
+      - cmd[cp]: sed -i '/Member.*host="${@clnode.intIP}"/d' ${globals.serverConfig}  
