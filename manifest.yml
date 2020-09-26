@@ -14,22 +14,23 @@ onInstall:
   - removeClusterConfig
   - applyClusterTemplate: ${nodes.cp.join(id,)}
   - forEach(wnode:nodes.cp):
-      - cmd[${@wnode.id}]: sed -i "s/defaultHost=\"localhost\"/defaultHost=\"${@wnode.intIP}\"/g" ${globals.serverConfig}; sed -i "s/Host[[:space:]]*name=\"localhost\"/Host name=\"${@wnode.intIP}\"/g" ${globals.serverConfig}
+      - cmd[${@wnode.id}]: |-
+          sed -i "s/defaultHost=\"localhost\"/defaultHost=\"${@wnode.intIP}\"/g" ${globals.serverConfig}; 
+          sed -i "s/Host[[:space:]]*name=\"localhost\"/Host name=\"${@wnode.intIP}\"/g" ${globals.serverConfig}
         user: root
       - forEach(clnode:nodes.cp):
-          - cmd[${@wnode.id}]: MEMBER_ID=$(echo ${@clnode.intIP} | sed 's/\./,/g'); sed -i "/<\/Membership>/i \<Member className=\"org.apache.catalina.tribes.membership.StaticMember\" port=\"4004\" host=\"${@clnode.intIP}\" uniqueId=\"{0,1,2,3,4,5,6,7,8,9,10,11,$MEMBER_ID}\" \/>" ${globals.serverConfig}
+          - cmd[${@wnode.id}]: |-
+              MEMBER_ID=$(echo ${@clnode.intIP} | sed 's/\./,/g'); 
+              sed -i "/<\/Membership>/i \<Member className=\"org.apache.catalina.tribes.membership.StaticMember\" port=\"4004\" host=\"${@clnode.intIP}\" uniqueId=\"{0,1,2,3,4,5,6,7,8,9,10,11,$MEMBER_ID}\" \/>" ${globals.serverConfig}
             user: root
             
 onBeforeScaleIn[cp]:
   - removeNodes: ${event.response.nodes.join(id,)}
       
 onAfterScaleOut[cp]:
-  - cmd[event.response.nodes]: yum -y install xmlstarlet; sed -i '/<\/Host>/e curl ${baseUrl}/conf/cluster.tpl' ${globals.serverConfig}
-    user: root
-  - forEach(wnode:nodes.cp):
-      - forEach(clnode:event.response.nodes):
-          - cmd[${@wnode.id}]: MEMBER_ID=$(echo ${@clnode.intIP} | sed 's/\./,/g'); grep -q "Member.*host=\"${@clnode.intIP}\"" ${globals.serverConfig}|| sed -i "/<\/Membership>/i \<Member className=\"org.apache.catalina.tribes.membership.StaticMember\" port=\"4004\" host=\"${@clnode.intIP}\" uniqueId=\"{0,1,2,3,4,5,6,7,8,9,10,11,$MEMBER_ID}\" \/>" ${globals.serverConfig}
-            user: root
+  - installXmlUtility: ${event.response.nodes.join(id,)}
+  - applyClusterTemplate: ${event.response.nodes.join(id,)}
+  - addNodes: ${nodes.cp.join(id,)}
             
 onAfterClone:
   - script: delete MANIFEST.id; return {result:0, jps:MANIFEST};
@@ -55,4 +56,11 @@ actions:
   
   removeNodes:
     - forEach(clnode:${this}):
-      - cmd[cp]: sed -i '/Member.*host="${@clnode.intIP}"/d' ${globals.serverConfig}  
+      - cmd[cp]: sed -i '/Member.*host="${@clnode.intIP}"/d' ${globals.serverConfig}
+      
+  addNodes:
+    - forEach(clnode:${this}):
+      - cmd[cp]: |-
+          MEMBER_ID=$(echo ${@clnode.intIP} | sed 's/\./,/g'); 
+          grep -q "Member.*host=\"${@clnode.intIP}\"" ${globals.serverConfig}|| sed -i "/<\/Membership>/i \<Member className=\"org.apache.catalina.tribes.membership.StaticMember\" port=\"4004\" host=\"${@clnode.intIP}\" uniqueId=\"{0,1,2,3,4,5,6,7,8,9,10,11,$MEMBER_ID}\" \/>" ${globals.serverConfig}
+        user: root
