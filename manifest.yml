@@ -36,6 +36,7 @@ onBeforeDelete:
 actions:
   installXmlUtility:
     - cmd[${this}]: yum -y install xmlstarlet;
+      user: root
     
   applyClusterTemplate:
     - cmd[${this}]:  sed -i '/<\/Host>/e curl ${baseUrl}/conf/cluster.tpl' ${globals.serverConfig};
