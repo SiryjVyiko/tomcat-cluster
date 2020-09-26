@@ -13,7 +13,7 @@ onInstall:
   - installXmlUtility: ${nodes.cp.join(id,)}
   - removeClusterConfig
   - applyClusterTemplate: ${nodes.cp.join(id,)}
-  - applyHostname: ${nodes.cp.join(id,)}
+  - applyHostName: ${nodes.cp.join(id,)}
   - addNodes: ${nodes.cp.join(id,)}
             
 onBeforeScaleIn[cp]:
