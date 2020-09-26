@@ -49,19 +49,19 @@ actions:
     - cmd[cp]: sed -i "/Member.*host=.*uniqueId=.*/d" ${globals.serverConfig}
   
   removeNodes:
-    - forEach(clnode:${this}):
-      - cmd[cp]: sed -i '/Member.*host="${@clnode.intIP}"/d' ${globals.serverConfig}
+    - forEach(${this}):
+      - cmd[cp]: sed -i '/Member.*host="${@i.intIP}"/d' ${globals.serverConfig}
   
   applyHostName:
-    - forEach(wnode:${this}):
-      - cmd[${@wnode.id}]: |-
-          sed -i "s/defaultHost=\"localhost\"/defaultHost=\"${@wnode.intIP}\"/g" ${globals.serverConfig}; 
-          sed -i "s/Host[[:space:]]*name=\"localhost\"/Host name=\"${@wnode.intIP}\"/g" ${globals.serverConfig}
+    - forEach(${this}):
+      - cmd[${@i.id}]: |-
+          sed -i "s/defaultHost=\"localhost\"/defaultHost=\"${@i.intIP}\"/g" ${globals.serverConfig}; 
+          sed -i "s/Host[[:space:]]*name=\"localhost\"/Host name=\"${@i.intIP}\"/g" ${globals.serverConfig}
         user: root
       
   addNodes:
-    - forEach(clnode:${this}):
+    - forEach(${this}):
       - cmd[cp]: |-
-          MEMBER_ID=$(echo ${@clnode.intIP} | sed 's/\./,/g'); 
-          grep -q "Member.*host=\"${@clnode.intIP}\"" ${globals.serverConfig}|| sed -i "/<\/Membership>/i \<Member className=\"org.apache.catalina.tribes.membership.StaticMember\" port=\"4004\" host=\"${@clnode.intIP}\" uniqueId=\"{0,1,2,3,4,5,6,7,8,9,10,11,$MEMBER_ID}\" \/>" ${globals.serverConfig}
+          MEMBER_ID=$(echo ${@i.intIP} | sed 's/\./,/g'); 
+          grep -q "Member.*host=\"${@i.intIP}\"" ${globals.serverConfig}|| sed -i "/<\/Membership>/i \<Member className=\"org.apache.catalina.tribes.membership.StaticMember\" port=\"4004\" host=\"${@i.intIP}\" uniqueId=\"{0,1,2,3,4,5,6,7,8,9,10,11,$MEMBER_ID}\" \/>" ${globals.serverConfig}
         user: root
