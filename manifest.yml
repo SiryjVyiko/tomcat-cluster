@@ -13,17 +13,20 @@ onInstall:
   - installXmlUtility: ${nodes.cp.join(id,)}
   - removeClusterConfig
   - applyClusterTemplate: ${nodes.cp.join(id,)}
-  - applyHostName: ${nodes.cp.join(id,)}
-  - addNodes: ${nodes.cp.join(id,)}
+  - addConfigToRedeployConf: ${nodes.cp.join(id,)}
+  - applyHostName
+  - addNodes
             
 onBeforeScaleIn[cp]:
-  - removeNodes: ${event.response.nodes.join(id,)}
+  - forEach (${event.response.nodes.join(id,)}):
+    - cmd[cp]: sed -i '/Member.*host="${@i.intIP}"/d' ${globals.serverConfig}
       
 onAfterScaleOut[cp]:
   - installXmlUtility: ${event.response.nodes.join(id,)}
   - applyClusterTemplate: ${event.response.nodes.join(id,)}
-  - applyHostName: ${event.response.nodes.join(id,)}
-  - addNodes: ${nodes.cp.join(id,)}
+  - addConfigToRedeployConf: ${nodes.cp.join(id,)}
+  - applyHostName:
+  - addNodes:
             
 onAfterClone:
   - script: delete MANIFEST.id; return {result:0, jps:MANIFEST};
@@ -48,20 +51,20 @@ actions:
   cleanupNodes:
     - cmd[cp]: sed -i "/Member.*host=.*uniqueId=.*/d" ${globals.serverConfig}
   
-  removeNodes:
-    - forEach(${this}):
-      - cmd[cp]: sed -i '/Member.*host="${@i.intIP}"/d' ${globals.serverConfig}
-  
   applyHostName:
-    - forEach(${this}):
+    - forEach(nodes.cp):
       - cmd[${@i.id}]: |-
           sed -i "s/defaultHost=\"localhost\"/defaultHost=\"${@i.intIP}\"/g" ${globals.serverConfig}; 
           sed -i "s/Host[[:space:]]*name=\"localhost\"/Host name=\"${@i.intIP}\"/g" ${globals.serverConfig}
         user: root
       
   addNodes:
-    - forEach(${this}):
+    - forEach(nodes.cp):
       - cmd[cp]: |-
           MEMBER_ID=$(echo ${@i.intIP} | sed 's/\./,/g'); 
-          grep -q "Member.*host=\"${@i.intIP}\"" ${globals.serverConfig}|| sed -i "/<\/Membership>/i \<Member className=\"org.apache.catalina.tribes.membership.StaticMember\" port=\"4004\" host=\"${@i.intIP}\" uniqueId=\"{0,1,2,3,4,5,6,7,8,9,10,11,$MEMBER_ID}\" \/>" ${globals.serverConfig}
+          grep -q "Member.*host=\"${@i.intIP}\"" ${globals.serverConfig} || sed -i "/<\/Membership>/i \<Member className=\"org.apache.catalina.tribes.membership.StaticMember\" port=\"4004\" host=\"${@i.intIP}\" uniqueId=\"{0,1,2,3,4,5,6,7,8,9,10,11,$MEMBER_ID}\" \/>" ${globals.serverConfig}
         user: root
+        
+  addConfigToRedeployConf:
+    - cmd[${this}]:  grep -q ${globals.serverConfig} /etc/jelastic/redeploy.conf || echo "${globals.serverConfig}" >> /etc/jelastic/redeploy.conf
+      user: root
