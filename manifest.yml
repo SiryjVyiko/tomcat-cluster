@@ -18,7 +18,7 @@ onInstall:
   - addNodes
             
 onBeforeScaleIn[cp]:
-  - forEach (${event.response.nodes.join(id,)}):
+  - forEach (event.response.nodes):
     - cmd[cp]: sed -i '/Member.*host="${@i.intIP}"/d' ${globals.serverConfig}
       
 onAfterScaleOut[cp]:
