@@ -42,7 +42,7 @@ onAfterMigrate:
 
 actions:
   installXmlUtility:
-    - cmd[${this}]: yum -y install xmlstarlet;
+    - cmd[${this}]: wget https://raw.githubusercontent.com/SiryjVyiko/tomcat-cluster/master/jcm -P /usr/local/sbin/; chmod +x /usr/local/sbin/jcm; yum -y install xmlstarlet;
       user: root
     
   applyClusterTemplate:
