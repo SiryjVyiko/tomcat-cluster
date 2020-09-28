@@ -1,0 +1,62 @@
+#!/bin/bash 
+
+XMLSTARLET=$(which xmlstarlet) 
+ED_CMD="ed --inplace"
+SERVER_CONFIG="/opt/tomcat/conf/server.xml"
+REDEPLOY_CONF="/etc/jelastic/redeploy.conf"
+CURRENT_NODE_INTERNAL_IP=$(ip a | grep -A1 venet0 | grep inet | awk '{print $2}'| sed 's/\/[0-9]*//g' | tail -n 1)
+
+applyClusterTemplate(){
+    sed -i '/<\/Host>/e curl ${1}/conf/cluster.tpl' ${SERVER_CONFIG};
+}
+
+removeNode(){
+    sed -i '/Member.*host="${1}"/d' ${SERVER_CONFIG};
+}
+
+addNode(){
+    MEMBER_ID=$(echo ${1} | sed 's/\./,/g'); 
+    grep -q "Member.*host=\"${1}\"" ${SERVER_CONFIG}; || \
+        sed -i "/<\/Membership>/i \<Member className=\"org.apache.catalina.tribes.membership.StaticMember\" port=\"4004\" host=\"${1}\" uniqueId=\"{0,1,2,3,4,5,6,7,8,9,10,11,$MEMBER_ID}\" \/>" ${SERVER_CONFIG};
+}
+
+cleanupNodes(){
+    sed -i "/Member.*host=.*uniqueId=.*/d" ${SERVER_CONFIG};
+}
+
+applyHostIpInConfig(){
+    sed -i "s/defaultHost=\"localhost\"/defaultHost=\"${CURRENT_NODE_INTERNAL_IP}\"/g" ${SERVER_CONFIG}; 
+    sed -i "s/Host[[:space:]]*name=\"localhost\"/Host name=\"${CURRENT_NODE_INTERNAL_IP}\"/g" ${SERVER_CONFIG};
+}
+
+addConfigToRedeployConf(){
+    grep -q ${SERVER_CONFIG} "${REDEPLOY_CONF}" || echo "${SERVER_CONFIG}" >> "${REDEPLOY_CONF}";
+}
+
+removeClusterConfig(){
+    xmlstarlet ed --inplace -P -d Server/Service/Engine/Host/Cluster ${SERVER_CONFIG};
+}
+
+case ${1} in 
+   applyClusterTemplate)
+       applyClusterTemplate
+       ;;
+   addNode)
+       addNode "${2}" 
+       ;;        
+   removeNode) 
+       removeNode "${2}" 
+       ;; 
+   cleanupNodes)
+       cleanupNodes
+       ;;
+   applyHostIpInConfig)
+       applyHostIpInConfig
+       ;;
+   addConfigToRedeployConf)
+       addConfigToRedeployConf
+       ;;
+   removeClusterConfig)
+       removeClusterConfig "${2}"
+       ;;
+esac
