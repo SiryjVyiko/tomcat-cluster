@@ -50,7 +50,7 @@ actions:
       user: root
     
   removeClusterConfig:
-    - cmd[cp]: xmlstarlet ed --inplace -P -d Server/Service/Engine/Host/Cluster ${globals.serverConfig}
+    - cmd[cp]: jcm removeClusterConfig
   
   cleanupNodes:
     - cmd[cp]: sed -i "/Member.*host=.*uniqueId=.*/d" ${globals.serverConfig}
