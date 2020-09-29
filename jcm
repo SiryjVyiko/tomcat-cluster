@@ -7,11 +7,11 @@ REDEPLOY_CONF="/etc/jelastic/redeploy.conf"
 CURRENT_NODE_INTERNAL_IP=$(ip a | grep -A1 venet0 | grep inet | awk '{print $2}'| sed 's/\/[0-9]*//g' | tail -n 1)
 
 applyClusterTemplate(){
-    sed -i '/<\/Host>/e curl ${1}/conf/cluster.tpl' ${SERVER_CONFIG};
+    sed -i "/<\/Host>/e curl ${1}/conf/cluster.tpl" ${SERVER_CONFIG};
 }
 
 removeNode(){
-    sed -i '/Member.*host="${1}"/d' ${SERVER_CONFIG};
+    sed -i "/Member.*host=${1}/d" ${SERVER_CONFIG};
 }
 
 addNode(){
