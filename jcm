@@ -39,7 +39,7 @@ removeClusterConfig(){
 
 case ${1} in 
    applyClusterTemplate)
-       applyClusterTemplate
+       applyClusterTemplate "${2}"
        ;;
    addNode)
        addNode "${2}" 
