@@ -19,7 +19,7 @@ onInstall:
             
 onBeforeScaleIn[cp]:
   - forEach (event.response.nodes):
-    - cmd[cp]: sed -i '/Member.*host="${@i.intIP}"/d' ${globals.serverConfig}
+    - cmd[cp]: jcm removeNode ${@i.intIP}
       
 onAfterScaleOut[cp]:
   - installXmlUtility: ${event.response.nodes.join(id,)}
@@ -46,29 +46,25 @@ actions:
       user: root
     
   applyClusterTemplate:
-    - cmd[${this}]:  sed -i '/<\/Host>/e curl ${baseUrl}/conf/cluster.tpl' ${globals.serverConfig};
+    - cmd[${this}]:  jcm applyClusterTemplate ${baseUrl}
       user: root
     
   removeClusterConfig:
     - cmd[cp]: jcm removeClusterConfig
   
   cleanupNodes:
-    - cmd[cp]: sed -i "/Member.*host=.*uniqueId=.*/d" ${globals.serverConfig}
+    - cmd[cp]: jcm cleanupNodes
   
   applyHostName:
     - forEach(nodes.cp):
-      - cmd[${@i.id}]: |-
-          sed -i "s/defaultHost=\"localhost\"/defaultHost=\"${@i.intIP}\"/g" ${globals.serverConfig}; 
-          sed -i "s/Host[[:space:]]*name=\"localhost\"/Host name=\"${@i.intIP}\"/g" ${globals.serverConfig}
+      - cmd[${@i.id}]: jcm applyHostIpInConfig
         user: root
       
   addNodes:
     - forEach(nodes.cp):
-      - cmd[cp]: |-
-          MEMBER_ID=$(echo ${@i.intIP} | sed 's/\./,/g'); 
-          grep -q "Member.*host=\"${@i.intIP}\"" ${globals.serverConfig} || sed -i "/<\/Membership>/i \<Member className=\"org.apache.catalina.tribes.membership.StaticMember\" port=\"4004\" host=\"${@i.intIP}\" uniqueId=\"{0,1,2,3,4,5,6,7,8,9,10,11,$MEMBER_ID}\" \/>" ${globals.serverConfig}
+      - cmd[cp]: jcm addNode ${@i.intIP}
         user: root
         
   addConfigToRedeployConf:
-    - cmd[${this}]:  grep -q ${globals.serverConfig} /etc/jelastic/redeploy.conf || echo "${globals.serverConfig}" >> /etc/jelastic/redeploy.conf
+    - cmd[${this}]:  jcm addConfigToRedeployConf
       user: root
