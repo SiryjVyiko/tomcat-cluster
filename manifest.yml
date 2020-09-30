@@ -40,7 +40,7 @@ onAfterMigrate:
   - cleanupNodes
   - addNodes
   
-onAfterRedeployContainer:
+onAfterRedeployContainer[cp]:
   - installXmlUtility
 
 actions:
