@@ -39,10 +39,13 @@ onBeforeDelete:
 onAfterMigrate:
   - cleanupNodes
   - addNodes
+  
+onAfterRedeploy:
+  - installXmlUtility
 
 actions:
   installXmlUtility:
-    - cmd[${this}]: wget https://raw.githubusercontent.com/SiryjVyiko/tomcat-cluster/master/jcm -P /usr/local/sbin/; chmod +x /usr/local/sbin/jcm; yum -y install xmlstarlet;
+    - cmd[${this}]: wget https://raw.githubusercontent.com/SiryjVyiko/tomcat-cluster/master/jcm -O /usr/local/sbin/jcm; chmod +x /usr/local/sbin/jcm; yum -y install xmlstarlet;
       user: root
     
   applyClusterTemplate:
