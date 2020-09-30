@@ -40,8 +40,8 @@ onAfterMigrate:
   - cleanupNodes
   - addNodes
   
-onAfterRedeploy:
-  - installXmlUtility
+onAfterRedeployContainer:
+  - installXmlUtility: ${event.response.nodes.join(id,)}
 
 actions:
   installXmlUtility:
