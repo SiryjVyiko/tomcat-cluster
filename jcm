@@ -26,6 +26,9 @@ applyClusterTemplate(){
 }
 
 removeNode(){
+    if [ "$NEW_MANIFEST" == "true" ]; then
+        [[ "x${CURRENT_NODE_INTERNAL_IP}" == "x${1}" ]] && return 0;
+    fi
     sed -i "/Member.*host=${1}/d" ${SERVER_CONFIG};
 }
 
