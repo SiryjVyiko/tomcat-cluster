@@ -31,8 +31,14 @@ removeNode(){
 
 addNode(){
     MEMBER_ID=$(echo ${1} | sed 's/\./,/g'); 
-    grep -q "Member.*host=\"${1}\"" ${SERVER_CONFIG} || \
-        sed -i "/<\/Membership>/i \<Member className=\"org.apache.catalina.tribes.membership.StaticMember\" port=\"4004\" host=\"${1}\" uniqueId=\"{0,1,2,3,4,5,6,7,8,9,10,11,$MEMBER_ID}\" \/>" ${SERVER_CONFIG};
+    if [ "$NEW_MANIFEST" == "true" ]; then
+        grep -q "Member.*host=\"${1}\"" ${SERVER_CONFIG} || \
+            sed -i "/<\/Membership>/i \<Member className=\"org.apache.catalina.tribes.membership.StaticMember\" port=\"4004\" host=\"${1}\" uniqueId=\"{0,1,2,3,4,5,6,7,8,9,10,11,$MEMBER_ID}\" \/>" ${SERVER_CONFIG};
+    else
+        [[ "x${CURRENT_NODE_INTERNAL_IP}" == "x${1}" ]] && return 0;
+        grep -q "Member.*host=\"${1}\"" ${SERVER_CONFIG} || \
+            sed -i "/org.apache.catalina.tribes.group.interceptors.StaticMembershipInterceptor/i \<Member className=\"org.apache.catalina.tribes.membership.StaticMember\" port=\"4004\" host=\"${1}\" uniqueId=\"{0,1,2,3,4,5,6,7,8,9,10,11,$MEMBER_ID}\" \/>" ${SERVER_CONFIG};
+    fi
 }
 
 cleanupNodes(){
@@ -42,6 +48,7 @@ cleanupNodes(){
 applyHostIpInConfig(){
     sed -i "s/defaultHost=\"localhost\"/defaultHost=\"${CURRENT_NODE_INTERNAL_IP}\"/g" ${SERVER_CONFIG}; 
     sed -i "s/Host[[:space:]]*name=\"localhost\"/Host name=\"${CURRENT_NODE_INTERNAL_IP}\"/g" ${SERVER_CONFIG};
+    sed -i "s/Receiver[[:space:]]*address="192.168.19.109"\".*\"/Host name=\"${CURRENT_NODE_INTERNAL_IP}\"/g" ${SERVER_CONFIG};
 }
 
 addConfigToRedeployConf(){
