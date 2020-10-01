@@ -5,9 +5,24 @@ ED_CMD="ed --inplace"
 SERVER_CONFIG="/opt/tomcat/conf/server.xml"
 REDEPLOY_CONF="/etc/jelastic/redeploy.conf"
 CURRENT_NODE_INTERNAL_IP=$(ip a | grep -A1 venet0 | grep inet | awk '{print $2}'| sed 's/\/[0-9]*//g' | tail -n 1)
+[ -f /etc/jelastic/metainf.conf ] && . /etc/jelastic/metainf.conf 
+
+[ -f /etc/jelastic/metainf.conf ] && source /etc/jelastic/metainf.conf
+
+if [[ "x$COMPUTE_TYPE" == "xtomee" ]]; then
+   NEW_MANIFEST="true";
+elif [[ $COMPUTE_TYPE_VERSION -le 8 ]]; then
+   NEW_MANIFEST="false";
+else
+   NEW_MANIFEST="true";
+fi
 
 applyClusterTemplate(){
-    sed -i "/<\/Host>/e curl ${1}/conf/cluster.tpl" ${SERVER_CONFIG};
+    if [ "$enabled" == "true" ]; then
+        sed -i "/<\/Host>/e curl ${1}/conf/cluster.tpl" ${SERVER_CONFIG};
+    else
+        sed -i "/<\/Host>/e curl ${1}/conf/cluster-old.tpl" ${SERVER_CONFIG};
+    fi
 }
 
 removeNode(){
