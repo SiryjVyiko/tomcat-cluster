@@ -1,7 +1,4 @@
-      <Cluster 
-              channelSendOptions="8" 
-              channelStartOptions="3" 
-              className="org.apache.catalina.ha.tcp.SimpleTcpCluster">
+      <Cluster className="org.apache.catalina.ha.tcp.SimpleTcpCluster" channelSendOptions="8" channelStartOptions="3">
           <Manager className="org.apache.catalina.ha.session.DeltaManager" expireSessionsOnShutdown="false" notifyListenersOnReplication="true" />
           <Channel className="org.apache.catalina.tribes.group.GroupChannel">
               <Sender className="org.apache.catalina.tribes.transport.ReplicationTransmitter">
