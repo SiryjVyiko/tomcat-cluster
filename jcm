@@ -18,7 +18,7 @@ else
 fi
 
 applyClusterTemplate(){
-    if [ "$enabled" == "true" ]; then
+    if [ "$NEW_MANIFEST" == "true" ]; then
         sed -i "/<\/Host>/e curl ${1}/conf/cluster.tpl" ${SERVER_CONFIG};
     else
         sed -i "/<\/Host>/e curl ${1}/conf/cluster-old.tpl" ${SERVER_CONFIG};
