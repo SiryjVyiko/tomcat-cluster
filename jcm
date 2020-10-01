@@ -51,7 +51,7 @@ cleanupNodes(){
 applyHostIpInConfig(){
     sed -i "s/defaultHost=\"localhost\"/defaultHost=\"${CURRENT_NODE_INTERNAL_IP}\"/g" ${SERVER_CONFIG}; 
     sed -i "s/Host[[:space:]]*name=\"localhost\"/Host name=\"${CURRENT_NODE_INTERNAL_IP}\"/g" ${SERVER_CONFIG};
-    sed -i "s/Receiver[[:space:]]*address=\"[0-9\.].*\"/Receiver address=\"${CURRENT_NODE_INTERNAL_IP}\"/g" ${SERVER_CONFIG};
+    sed -i "s/Receiver[[:space:]]*address=\"[0-9\.]*\"/Receiver address=\"${CURRENT_NODE_INTERNAL_IP}\"/g" ${SERVER_CONFIG};
 }
 
 addConfigToRedeployConf(){
