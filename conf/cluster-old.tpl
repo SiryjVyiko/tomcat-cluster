@@ -12,8 +12,6 @@
               <Interceptor className="org.apache.catalina.tribes.group.interceptors.MessageDispatchInterceptor" />
           </Channel>
           <Valve 
-              className="org.apache.catalina.ha.tcp.ReplicationValve" 
-              filter=".*\.gif;.*\.js;.*\.jpg;.*\.png;.*\.htm;.*\.html;.*\.css;.*\.txt;" 
-          />
+              className="org.apache.catalina.ha.tcp.ReplicationValve" filter=".*\.gif;.*\.js;.*\.jpg;.*\.png;.*\.htm;.*\.html;.*\.css;.*\.txt;" />
           <ClusterListener className="org.apache.catalina.ha.session.ClusterSessionListener" />
       </Cluster>
