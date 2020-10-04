@@ -69,7 +69,7 @@ actions:
       
   addNodes:
     - forEach(nodes.cp):
-      - cmd[cp]: jcm addNode ${@i.intIP}
+      - cmd[cp]: jcm addNode ${@i.intIP} ${@i.id}
         user: root
         
   addConfigToRedeployConf:
