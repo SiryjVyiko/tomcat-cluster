@@ -18,10 +18,11 @@ else
 fi
 
 applyClusterTemplate(){
+    sed -i "/<\/Host>/e curl ${1}/conf/cluster-gereral.tpl" ${SERVER_CONFIG};
     if [ "$NEW_MANIFEST" == "true" ]; then
-        sed -i "/<\/Host>/e curl ${1}/conf/cluster.tpl" ${SERVER_CONFIG};
+        sed -i "/<Valve>/e curl ${1}/conf/cluster.tpl" ${SERVER_CONFIG};
     else
-        sed -i "/<\/Host>/e curl ${1}/conf/cluster-old.tpl" ${SERVER_CONFIG};
+        sed -i "/<Valve>/e curl ${1}/conf/cluster-old.tpl" ${SERVER_CONFIG};
     fi
 }
 
