@@ -1,5 +1,3 @@
-        <Cluster className="org.apache.catalina.ha.tcp.SimpleTcpCluster" channelSendOptions="6">
-                <Manager className="org.apache.catalina.ha.session.BackupManager" expireSessionsOnShutdown="false" notifyListenersOnReplication="true" />
                 <Channel className="org.apache.catalina.tribes.group.GroupChannel">
                         <Membership className="org.apache.catalina.tribes.membership.StaticMembershipService" connectTimeout="10000">
                         </Membership>
@@ -11,6 +9,3 @@
                         <Interceptor className="org.apache.catalina.tribes.group.interceptors.MessageDispatchInterceptor"/>
                         <Interceptor className="org.apache.catalina.tribes.group.interceptors.ThroughputInterceptor"/>
                 </Channel>
-                <Valve className="org.apache.catalina.ha.tcp.ReplicationValve" filter=".*\.gif|.*\.js|.*\.jpeg|.*\.jpg|.*\.png|.*\.htm|.*\.html|.*\.css|.*\.txt"/>
-                <ClusterListener className="org.apache.catalina.ha.session.ClusterSessionListener"/>
-        </Cluster>
