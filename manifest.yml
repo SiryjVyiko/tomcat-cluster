@@ -16,17 +16,22 @@ onInstall:
   - addConfigToRedeployConf: ${nodes.cp.join(id,)}
   - applyHostName
   - addNodes
+  - cmd[cp]: jem service restart
             
 onBeforeScaleIn[cp]:
   - forEach (event.response.nodes):
     - cmd[cp]: jcm removeNode ${@i.intIP}
-      
+    
+onAfterScaleIn[cp]:
+  - cmd[cp]: jem service restart
+
 onAfterScaleOut[cp]:
   - installXmlUtility: ${event.response.nodes.join(id,)}
   - applyClusterTemplate: ${event.response.nodes.join(id,)}
   - addConfigToRedeployConf: ${nodes.cp.join(id,)}
   - applyHostName
   - addNodes
+  - cmd[cp]: jem service restart
             
 onAfterClone:
   - script: delete MANIFEST.id; return {result:0, jps:MANIFEST};
@@ -39,6 +44,7 @@ onBeforeDelete:
 onAfterMigrate:
   - cleanupNodes
   - addNodes
+  - cmd[cp]: jem service restart
   
 onAfterRedeployContainer[cp]:
   - installXmlUtility
