@@ -56,7 +56,7 @@ actions:
 
   addClusteringFirewallRule:
     - env.control.AddContainerEnvVars [${this}]:
-        vars: {"JELASTIC_EXPOSE":"4004"}
+        vars: {"JELASTIC_PORTS":"4004"}
 
   installXmlUtility:
     - cmd[cp]: wget https://raw.githubusercontent.com/SiryjVyiko/tomcat-cluster/master/jcm -O /usr/local/sbin/jcm; chmod +x /usr/local/sbin/jcm; yum -y install xmlstarlet;
