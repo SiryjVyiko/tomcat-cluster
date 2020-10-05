@@ -1,7 +1,7 @@
 #!/bin/bash 
 
 XMLSTARLET=$(which xmlstarlet) 
-ED_CMD="ed --inplace"
+ED_CMD="ed --inplace -P"
 SERVER_CONFIG="/opt/tomcat/conf/server.xml"
 REDEPLOY_CONF="/etc/jelastic/redeploy.conf"
 CURRENT_NODE_INTERNAL_IP=$(ip a | grep -A1 venet0 | grep inet | awk '{print $2}'| sed 's/\/[0-9]*//g' | tail -n 1)
@@ -65,7 +65,7 @@ addConfigToRedeployConf(){
 }
 
 removeClusterConfig(){
-    xmlstarlet ed --inplace -P -d Server/Service/Engine/Host/Cluster ${SERVER_CONFIG};
+    xmlstarlet ${ED_CMD} -d Server/Service/Engine/Host/Cluster ${SERVER_CONFIG};
 }
 
 checkClusterConfig(){
@@ -73,11 +73,11 @@ checkClusterConfig(){
     if [ "$NEW_MANIFEST" == "$NEW_CONFIG" ]; then
         return 0;
     else
-        xmlstarlet ed -P -d "Server/Service/Engine/Host/Cluster/Channel/Interceptor[@className='org.apache.catalina.tribes.group.interceptors.StaticMembershipInterceptor']" server.xml
-        xmlstarlet ed -P -d "Server/Service/Engine/Host/Cluster/Channel/Interceptor[@className='org.apache.catalina.tribes.group.interceptors.TcpPingInterceptor']" server.xml
-        xmlstarlet ed -P -d "Server/Service/Engine/Host/Cluster/Channel/Receiver[@className='org.apache.catalina.tribes.transport.nio.NioReceiver']" server.xml
-        xmlstarlet ed -P -d "Server/Service/Engine/Host/Cluster/Channel/Membership" server.xml
-        xmlstarlet ed -P -d "Server/Service/Engine/Host/Cluster/Channel/Interceptor[@className='org.apache.catalina.tribes.group.interceptors.ThroughputInterceptor']" server.xml
+        xmlstarlet ${ED_CMD} -d "Server/Service/Engine/Host/Cluster/Channel/Interceptor[@className='org.apache.catalina.tribes.group.interceptors.StaticMembershipInterceptor']" server.xml
+        xmlstarlet ${ED_CMD} -d "Server/Service/Engine/Host/Cluster/Channel/Interceptor[@className='org.apache.catalina.tribes.group.interceptors.TcpPingInterceptor']" server.xml
+        xmlstarlet ${ED_CMD} -d "Server/Service/Engine/Host/Cluster/Channel/Receiver[@className='org.apache.catalina.tribes.transport.nio.NioReceiver']" server.xml
+        xmlstarlet ${ED_CMD} -d "Server/Service/Engine/Host/Cluster/Channel/Membership" server.xml
+        xmlstarlet ${ED_CMD} -d "Server/Service/Engine/Host/Cluster/Channel/Interceptor[@className='org.apache.catalina.tribes.group.interceptors.ThroughputInterceptor']" server.xml
         addVersionSpecificConfig ${1}
     fi
 }
