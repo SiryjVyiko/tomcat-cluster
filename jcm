@@ -17,17 +17,17 @@ else
    NEW_MANIFEST="true";
 fi
 
-applyClusterTemplate(){
-    sed -i "/<\/Host>/e curl ${1}/conf/cluster-general.tpl" ${SERVER_CONFIG};
-    addVersionSpecificConfig
-}
-
 addVersionSpecificConfig(){
     if [ "$NEW_MANIFEST" == "true" ]; then
         sed -i "/<\/Channel>/e curl ${1}/conf/cluster.tpl" ${SERVER_CONFIG};
     else
         sed -i "/<\/Channel>/e curl ${1}/conf/cluster-old.tpl" ${SERVER_CONFIG};
     fi
+}
+
+applyClusterTemplate(){
+    sed -i "/<\/Host>/e curl ${1}/conf/cluster-general.tpl" ${SERVER_CONFIG};
+    addVersionSpecificConfig
 }
 
 removeNode(){
