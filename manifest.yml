@@ -55,8 +55,20 @@ onAfterRedeployContainer[cp]:
 actions:
 
   addClusteringFirewallRule:
-    - env.control.AddContainerEnvVars [${this}]:
-        vars: {"JELASTIC_PORTS":"4004"}
+    script: |
+        var envName = "${env.name}", nodeGroup="cp";
+        inputRule = {"direction":"INPUT","name":"Clustering","protocol":"ALL","ports":4004,"src":"ALL","priority":1200,"action":"ALLOW"};
+        outputRule = {"direction":"OUTPUT","name":"Clustering","protocol":"ALL","ports":4004,"dst":"ALL","priority":1300,"action":"ALLOW"};
+        if (jelastic.environment.security) {
+          resp = jelastic.billing.account.GetOwnerQuotas(appid, session, 'firewall.enabled');
+          if (!resp || resp.result !== 0) return resp;
+          bFireWallEnabled = resp.array[0] ? resp.array[0].value : 0;
+          if (bFireWallEnabled) {
+            resp = jelastic.environment.security.AddRule(envName, session, inputRule, nodeGroup);
+            if (!resp || resp.result !== 0) return resp;
+            return jelastic.environment.security.AddRule(envName, session, outputRule, nodeGroup);
+          }
+        }
 
   installXmlUtility:
     - cmd[cp]: wget https://raw.githubusercontent.com/SiryjVyiko/tomcat-cluster/master/jcm -O /usr/local/sbin/jcm; chmod +x /usr/local/sbin/jcm; yum -y install xmlstarlet;
