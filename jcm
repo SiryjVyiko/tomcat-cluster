@@ -27,7 +27,7 @@ addVersionSpecificConfig(){
 
 applyClusterTemplate(){
     sed -i "/<\/Host>/e curl ${1}/conf/cluster-general.tpl" ${SERVER_CONFIG};
-    addVersionSpecificConfig
+    addVersionSpecificConfig ${1}
 }
 
 removeNode(){
@@ -73,7 +73,7 @@ checkClusterConfig(){
     if [ "$NEW_MANIFEST" == "$NEW_CONFIG" ]; then
         return 0;
     else
-        addVersionSpecificConfig
+        addVersionSpecificConfig ${1}
     fi
 }
 
@@ -100,6 +100,6 @@ case ${1} in
        removeClusterConfig "${2}"
        ;;
    checkClusterConfig)
-       checkClusterConfig
+       checkClusterConfig ${2}
        ;;
 esac
