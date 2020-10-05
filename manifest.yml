@@ -51,9 +51,10 @@ onAfterMigrate:
 onAfterRedeployContainer[cp]:
   - installXmlUtility
   - checkClusterConfig
-
+  - addNodes
+  - cmd[cp]: jem service restart
+  
 actions:
-
   addClusteringFirewallRule:
     script: |
         var envName = "${env.name}", nodeGroup="cp";
