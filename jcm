@@ -19,6 +19,10 @@ fi
 
 applyClusterTemplate(){
     sed -i "/<\/Host>/e curl ${1}/conf/cluster-general.tpl" ${SERVER_CONFIG};
+    addVersionSpecificConfig
+}
+
+addVersionSpecificConfig(){
     if [ "$NEW_MANIFEST" == "true" ]; then
         sed -i "/<\/Channel>/e curl ${1}/conf/cluster.tpl" ${SERVER_CONFIG};
     else
@@ -64,6 +68,15 @@ removeClusterConfig(){
     xmlstarlet ed --inplace -P -d Server/Service/Engine/Host/Cluster ${SERVER_CONFIG};
 }
 
+checkClusterConfig(){
+    grep -q "StaticMembershipService" && NEW_CONFIG="true" || NEW_CONFIG="false"
+    if [ "$NEW_MANIFEST" == "$NEW_CONFIG" ]; then
+        return 0;
+    else
+        addVersionSpecificConfig
+    fi
+}
+
 case ${1} in 
    applyClusterTemplate)
        applyClusterTemplate "${2}"
@@ -85,5 +98,8 @@ case ${1} in
        ;;
    removeClusterConfig)
        removeClusterConfig "${2}"
+       ;;
+   checkClusterConfig)
+       checkClusterConfig
        ;;
 esac
