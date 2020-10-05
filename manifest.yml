@@ -16,6 +16,7 @@ onInstall:
   - addConfigToRedeployConf: ${nodes.cp.join(id,)}
   - applyHostName
   - addNodes
+  - addClusteringFirewallRule: ${nodes.cp.join(id,)}
   - cmd[cp]: jem service restart
             
 onBeforeScaleIn[cp]:
@@ -31,6 +32,7 @@ onAfterScaleOut[cp]:
   - addConfigToRedeployConf: ${nodes.cp.join(id,)}
   - applyHostName
   - addNodes
+  - addClusteringFirewallRule: ${event.response.nodes.join(id,)}
   - cmd[cp]: jem service restart
             
 onAfterClone:
@@ -51,6 +53,11 @@ onAfterRedeployContainer[cp]:
   - checkClusterConfig
 
 actions:
+
+  addClusteringFirewallRule:
+    - env.control.AddContainerEnvVars [${this}]:
+        vars: {"JELASTIC_EXPOSE":"4004"}
+
   installXmlUtility:
     - cmd[cp]: wget https://raw.githubusercontent.com/SiryjVyiko/tomcat-cluster/master/jcm -O /usr/local/sbin/jcm; chmod +x /usr/local/sbin/jcm; yum -y install xmlstarlet;
       user: root
