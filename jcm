@@ -73,6 +73,11 @@ checkClusterConfig(){
     if [ "$NEW_MANIFEST" == "$NEW_CONFIG" ]; then
         return 0;
     else
+        xmlstarlet ed -P -d "Server/Service/Engine/Host/Cluster/Channel/Interceptor[@className='org.apache.catalina.tribes.group.interceptors.StaticMembershipInterceptor']" server.xml
+        xmlstarlet ed -P -d "Server/Service/Engine/Host/Cluster/Channel/Interceptor[@className='org.apache.catalina.tribes.group.interceptors.TcpPingInterceptor']" server.xml
+        xmlstarlet ed -P -d "Server/Service/Engine/Host/Cluster/Channel/Receiver[@className='org.apache.catalina.tribes.transport.nio.NioReceiver']" server.xml
+        xmlstarlet ed -P -d "Server/Service/Engine/Host/Cluster/Channel/Membership" server.xml
+        xmlstarlet ed -P -d "Server/Service/Engine/Host/Cluster/Channel/Interceptor[@className='org.apache.catalina.tribes.group.interceptors.ThroughputInterceptor']" server.xml
         addVersionSpecificConfig ${1}
     fi
 }
