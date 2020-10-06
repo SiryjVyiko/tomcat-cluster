@@ -83,7 +83,7 @@ actions:
     - cmd[cp]: jcm removeClusterConfig
 
   checkClusterConfig:
-    - cmd[cp]: jcm checkClusterConfig
+    - cmd[cp]: jcm checkClusterConfig ${baseUrl}
     
   cleanupNodes:
     - cmd[cp]: jcm cleanupNodes
