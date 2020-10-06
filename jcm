@@ -5,6 +5,7 @@ ED_CMD="ed --inplace -P"
 SERVER_CONFIG="/opt/tomcat/conf/server.xml"
 REDEPLOY_CONF="/etc/jelastic/redeploy.conf"
 CURRENT_NODE_INTERNAL_IP=$(ip a | grep -A1 venet0 | grep inet | awk '{print $2}'| sed 's/\/[0-9]*//g' | tail -n 1)
+CLUSTER_XPATH="Server/Service/Engine/Host/Cluster"
 [ -f /etc/jelastic/metainf.conf ] && . /etc/jelastic/metainf.conf 
 
 [ -f /etc/jelastic/metainf.conf ] && source /etc/jelastic/metainf.conf
@@ -65,19 +66,19 @@ addConfigToRedeployConf(){
 }
 
 removeClusterConfig(){
-    xmlstarlet ${ED_CMD} -d Server/Service/Engine/Host/Cluster ${SERVER_CONFIG};
+    xmlstarlet ${ED_CMD} -d ${CLUSTER_XPATH} ${SERVER_CONFIG};
 }
 
 checkClusterConfig(){
-    grep -q "StaticMembershipService" && NEW_CONFIG="true" || NEW_CONFIG="false"
+    grep -q "StaticMembershipService" ${SERVER_CONFIG} && NEW_CONFIG="true" || NEW_CONFIG="false"
     if [ "$NEW_MANIFEST" == "$NEW_CONFIG" ]; then
         return 0;
     else
-        xmlstarlet ${ED_CMD} -d "Server/Service/Engine/Host/Cluster/Channel/Interceptor[@className='org.apache.catalina.tribes.group.interceptors.StaticMembershipInterceptor']" server.xml
-        xmlstarlet ${ED_CMD} -d "Server/Service/Engine/Host/Cluster/Channel/Interceptor[@className='org.apache.catalina.tribes.group.interceptors.TcpPingInterceptor']" server.xml
-        xmlstarlet ${ED_CMD} -d "Server/Service/Engine/Host/Cluster/Channel/Receiver[@className='org.apache.catalina.tribes.transport.nio.NioReceiver']" server.xml
-        xmlstarlet ${ED_CMD} -d "Server/Service/Engine/Host/Cluster/Channel/Membership" server.xml
-        xmlstarlet ${ED_CMD} -d "Server/Service/Engine/Host/Cluster/Channel/Interceptor[@className='org.apache.catalina.tribes.group.interceptors.ThroughputInterceptor']" server.xml
+        xmlstarlet ${ED_CMD} -d "${CLUSTER_XPATH}/Channel/Interceptor[@className='org.apache.catalina.tribes.group.interceptors.StaticMembershipInterceptor']" ${SERVER_CONFIG};
+        xmlstarlet ${ED_CMD} -d "${CLUSTER_XPATH}/Channel/Interceptor[@className='org.apache.catalina.tribes.group.interceptors.TcpPingInterceptor']" ${SERVER_CONFIG};
+        xmlstarlet ${ED_CMD} -d "${CLUSTER_XPATH}/Channel/Receiver[@className='org.apache.catalina.tribes.transport.nio.NioReceiver']" ${SERVER_CONFIG};
+        xmlstarlet ${ED_CMD} -d "${CLUSTER_XPATH}/Channel/Membership" ${SERVER_CONFIG};
+        xmlstarlet ${ED_CMD} -d "${CLUSTER_XPATH}/Channel/Interceptor[@className='org.apache.catalina.tribes.group.interceptors.ThroughputInterceptor']" ${SERVER_CONFIG};
         addVersionSpecificConfig ${1}
     fi
 }
