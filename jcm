@@ -74,6 +74,9 @@ checkClusterConfig(){
     if [ "$NEW_MANIFEST" == "$NEW_CONFIG" ]; then
         return 0;
     else
+        if [ "$NEW_MANIFEST" == "true" ]; then
+            xmlstarlet ${ED_CMD} -d "Server/Listener[@className='org.apache.catalina.core.JasperListener']" ${SERVER_CONFIG};
+        fi
         xmlstarlet ${ED_CMD} -d "${CLUSTER_XPATH}/Channel/Interceptor[@className='org.apache.catalina.tribes.group.interceptors.StaticMembershipInterceptor']" ${SERVER_CONFIG};
         xmlstarlet ${ED_CMD} -d "${CLUSTER_XPATH}/Channel/Interceptor[@className='org.apache.catalina.tribes.group.interceptors.TcpPingInterceptor']" ${SERVER_CONFIG};
         xmlstarlet ${ED_CMD} -d "${CLUSTER_XPATH}/Channel/Receiver[@className='org.apache.catalina.tribes.transport.nio.NioReceiver']" ${SERVER_CONFIG};
