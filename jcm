@@ -20,9 +20,9 @@ fi
 
 addVersionSpecificConfig(){
     if [ "$NEW_MANIFEST" == "true" ]; then
-        sed -i "/<\/Channel>/e curl ${1}/conf/cluster.tpl" ${SERVER_CONFIG};
+        sed -i "/<\/Channel>/e curl ${1}/conf/cluster-tomcat-9-10-tomee.xml" ${SERVER_CONFIG};
     else
-        sed -i "/<\/Channel>/e curl ${1}/conf/cluster-old.tpl" ${SERVER_CONFIG};
+        sed -i "/<\/Channel>/e curl ${1}/conf/cluster-tomcat-7-8.tpl" ${SERVER_CONFIG};
     fi
 }
 
