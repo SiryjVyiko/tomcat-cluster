@@ -27,7 +27,7 @@ addVersionSpecificConfig(){
 }
 
 applyClusterTemplate(){
-    sed -i "/<\/Host>/e curl ${1}/conf/cluster-general.tpl" ${SERVER_CONFIG};
+    sed -i "/<\/Engine>/e curl ${1}/conf/cluster-general.tpl" ${SERVER_CONFIG};
     addVersionSpecificConfig ${1}
 }
 
