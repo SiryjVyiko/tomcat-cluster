@@ -5,7 +5,7 @@ ED_CMD="ed --inplace -P"
 SERVER_CONFIG="/opt/tomcat/conf/server.xml"
 REDEPLOY_CONF="/etc/jelastic/redeploy.conf"
 CURRENT_NODE_INTERNAL_IP=$(ip a | grep -A1 venet0 | grep inet | awk '{print $2}'| sed 's/\/[0-9]*//g' | tail -n 1)
-CLUSTER_XPATH="Server/Service/Engine/Host/Cluster"
+CLUSTER_XPATH="Server/Service/Engine/Cluster"
 [ -f /etc/jelastic/metainf.conf ] && . /etc/jelastic/metainf.conf 
 
 NEW_MANIFEST="true";
