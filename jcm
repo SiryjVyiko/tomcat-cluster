@@ -10,12 +10,10 @@ CLUSTER_XPATH="Server/Service/Engine/Host/Cluster"
 
 [ -f /etc/jelastic/metainf.conf ] && source /etc/jelastic/metainf.conf
 
-if [[ "x$COMPUTE_TYPE" == "xtomee" ]]; then
-   NEW_MANIFEST="true";
-elif [[ $COMPUTE_TYPE_VERSION -le 8 ]]; then
-   NEW_MANIFEST="false";
-else
-   NEW_MANIFEST="true";
+NEW_MANIFEST="true";
+
+if [ "x$COMPUTE_TYPE" == "xtomee" -a $COMPUTE_TYPE_VERSION -le 8 ] ; then
+    NEW_MANIFEST="false";
 fi
 
 addVersionSpecificConfig(){
@@ -27,11 +25,21 @@ addVersionSpecificConfig(){
 }
 
 applyClusterTemplate(){
+    if [ $# -eq 0 ]
+    then
+        echo "No arguments supplied";
+	return 1;
+    fi
     sed -i "/<\/Engine>/e curl ${1}/conf/cluster-general.tpl" ${SERVER_CONFIG};
     addVersionSpecificConfig ${1}
 }
 
 removeNode(){
+    if [ $# -eq 0 ]
+    then
+        echo "No arguments supplied";
+        return 1;
+    fi
     if [ "$NEW_MANIFEST" == "false" ]; then
         [[ "x${CURRENT_NODE_INTERNAL_IP}" == "x${1}" ]] && return 0;
     fi
@@ -39,6 +47,11 @@ removeNode(){
 }
 
 addNode(){
+    if [ $# -lt 2 ]
+    then
+        echo "No arguments supplied";
+        return 1;
+    fi
     read A B C D <<<"${1//./ }"
     MEMBER_ID="$(echo $A|tail -c 3),$(echo $B|tail -c 3),$(echo $C|tail -c 3),$(echo $D|tail -c 3),$(echo $2|tail -c 3)"
     if [ "$NEW_MANIFEST" == "true" ]; then
@@ -70,6 +83,11 @@ removeClusterConfig(){
 }
 
 checkClusterConfig(){
+    if [ $# -eq 0 ]
+    then
+        echo "No arguments supplied";
+        return 1;
+    fi
     grep -q "StaticMembershipService" ${SERVER_CONFIG} && NEW_CONFIG="true" || NEW_CONFIG="false"
     if [ "$NEW_MANIFEST" == "$NEW_CONFIG" ]; then
         return 0;
@@ -107,7 +125,7 @@ case ${1} in
        addConfigToRedeployConf
        ;;
    removeClusterConfig)
-       removeClusterConfig "${2}"
+       removeClusterConfig
        ;;
    checkClusterConfig)
        checkClusterConfig ${2}
