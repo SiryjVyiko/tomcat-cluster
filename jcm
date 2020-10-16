@@ -8,11 +8,9 @@ CURRENT_NODE_INTERNAL_IP=$(ip a | grep -A1 venet0 | grep inet | awk '{print $2}'
 CLUSTER_XPATH="Server/Service/Engine/Host/Cluster"
 [ -f /etc/jelastic/metainf.conf ] && . /etc/jelastic/metainf.conf 
 
-[ -f /etc/jelastic/metainf.conf ] && source /etc/jelastic/metainf.conf
-
 NEW_MANIFEST="true";
 
-if [ "x$COMPUTE_TYPE" == "xtomee" -a $COMPUTE_TYPE_VERSION -le 8 ] ; then
+if [ "x$COMPUTE_TYPE" != "xtomee" -a $COMPUTE_TYPE_VERSION -le 8 ] ; then
     NEW_MANIFEST="false";
 fi
 
