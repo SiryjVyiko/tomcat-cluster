@@ -14,8 +14,8 @@ globals:
   serverConfig: /opt/tomcat/conf/server.xml
                                                                                                                                                                               
 onInstall:
-  - installXmlUtility: ${nodes.cp.join(id,)}
-  - removeClusterConfig: ${nodes.cp.join(id,)}
+  - installXmlUtility
+  - removeClusterConfig
   - applyClusterTemplate: ${nodes.cp.join(id,)}
   - addConfigToRedeployConf: ${nodes.cp.join(id,)}
   - applyHostName
@@ -76,7 +76,7 @@ actions:
         }
 
   installXmlUtility:
-    - cmd[${this}]: wget '${baseUrl}/jcm' -O /usr/local/sbin/jcm; chmod +x /usr/local/sbin/jcm; yum -y install xmlstarlet;
+    - cmd[cp]: wget '${baseUrl}/jcm' -O /usr/local/sbin/jcm; chmod +x /usr/local/sbin/jcm; yum -y install xmlstarlet;
       user: root
     
   applyClusterTemplate:
@@ -84,7 +84,7 @@ actions:
       user: root
     
   removeClusterConfig:
-    - cmd[${this}]: jcm removeClusterConfig
+    - cmd[cp]: jcm removeClusterConfig
 
   checkClusterConfig:
     - cmd[cp]: jcm checkClusterConfig ${baseUrl}
