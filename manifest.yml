@@ -44,7 +44,7 @@ onAfterClone:
   - install: ${response.jps}
     envName: ${event.response.env.envName}
 
-onBeforeDelete:
+onUninstall:
   - removeClusterConfig
   
 onAfterMigrate:
