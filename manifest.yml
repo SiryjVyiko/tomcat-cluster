@@ -20,7 +20,7 @@ onInstall:
   - addConfigToRedeployConf: ${nodes.cp.join(id,)}
   - applyHostName
   - addNodes
-  - addClusteringFirewallRule: ${nodes.cp.join(id,)}
+  - addClusteringFirewallRule
   - cmd[cp]: jem service restart
             
 onBeforeScaleIn[cp]:
@@ -36,6 +36,7 @@ onAfterScaleOut[cp]:
   - addConfigToRedeployConf: ${nodes.cp.join(id,)}
   - applyHostName
   - addNodes
+  - addClusteringFirewallRule
   - cmd[cp]: jem service restart
             
 onAfterClone:
@@ -61,7 +62,7 @@ onAfterRedeployContainer[cp]:
 actions:
   addClusteringFirewallRule:
     script: |
-        var envName = "${env.name}", nodeGroup="cp";
+        var envName = "${env.name}", nodeGroup="cp", inputRuleExists = new Boolean(false);
         var inputRule = {"direction":"INPUT","name":"Clustering","protocol":"ALL","ports":4004,"src":"ALL","priority":1200,"action":"ALLOW"};
         var outputRule = {"direction":"OUTPUT","name":"Clustering","protocol":"ALL","ports":4004,"dst":"ALL","priority":1300,"action":"ALLOW"};
         if (jelastic.environment.security) {
@@ -69,8 +70,22 @@ actions:
           if (!resp || resp.result !== 0) return resp;
           bFireWallEnabled = resp.array[0] ? resp.array[0].value : 0;
           if (bFireWallEnabled) {
-            resp = jelastic.environment.security.AddRule(envName, session, inputRule, nodeGroup);
-            if (!resp || resp.result !== 0) return resp;
+            var rules = jelastic.environment.security.GetRules(envName, session, nodeGroup, InBond).rules;
+            for (var i = 0; i < rules.length; i ++) {
+                if (rules[i].ports == 4004) {
+                    inputRuleExists = true;
+                }
+            }
+            if (inputRuleExists == false){
+                resp = jelastic.environment.security.AddRule(envName, session, inputRule, nodeGroup);
+                if (!resp || resp.result !== 0) return resp;
+            }
+            var rules = jelastic.environment.security.GetRules(envName, session, nodeGroup, InBond).rules;
+            for (var i = 0; i < rules.length; i ++) {
+                if (rules[i].ports == 4004) {
+                    return { result: 0 };
+                }
+            }
             return jelastic.environment.security.AddRule(envName, session, outputRule, nodeGroup);
           }
         }
