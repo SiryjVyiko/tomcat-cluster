@@ -45,6 +45,7 @@ onAfterClone:
 
 onUninstall:
   - removeClusterConfig
+  - removeClusteringFirewallRule
   
 onAfterMigrate:
   - cleanupNodes
@@ -73,6 +74,17 @@ actions:
             return jelastic.environment.security.AddRule(envName, session, outputRule, nodeGroup);
           }
         }
+        
+  removeClusteringFirewallRule:
+    script: |
+        var envName = "${env.name}", nodeGroup="cp";
+        var rules = jelastic.environment.security.GetRules(envName, session, nodeGroup, InOutBond).rules;
+        for (var i = 0; i < rules.length; i ++) {
+            if (rules[i].ports == 4004) {
+                return jelastic.environment.security.RemoveRule(envName, session, rules[i].id);
+            }
+        }
+        return { result: 0 }
 
   installXmlUtility:
     - cmd[cp]: wget '${baseUrl}/jcm' -O /usr/local/sbin/jcm; chmod +x /usr/local/sbin/jcm; yum -y install xmlstarlet;
