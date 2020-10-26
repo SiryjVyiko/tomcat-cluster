@@ -36,7 +36,6 @@ onAfterScaleOut[cp]:
   - addConfigToRedeployConf: ${nodes.cp.join(id,)}
   - applyHostName
   - addNodes
-  - addClusteringFirewallRule: ${event.response.nodes.join(id,)}
   - cmd[cp]: jem service restart
             
 onAfterClone:
