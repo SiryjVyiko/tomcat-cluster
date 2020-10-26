@@ -70,7 +70,7 @@ actions:
           if (!resp || resp.result !== 0) return resp;
           bFireWallEnabled = resp.array[0] ? resp.array[0].value : 0;
           if (bFireWallEnabled) {
-            var rules = jelastic.environment.security.GetRules(envName, session, nodeGroup, InBond).rules;
+            var rules = jelastic.environment.security.GetRules(envName, session, nodeGroup, INPUT).rules;
             for (var i = 0; i < rules.length; i ++) {
                 if (rules[i].ports == 4004) {
                     inputRuleExists = true;
@@ -80,7 +80,7 @@ actions:
                 resp = jelastic.environment.security.AddRule(envName, session, inputRule, nodeGroup);
                 if (!resp || resp.result !== 0) return resp;
             }
-            var rules = jelastic.environment.security.GetRules(envName, session, nodeGroup, InBond).rules;
+            var rules = jelastic.environment.security.GetRules(envName, session, nodeGroup, OUTPUT).rules;
             for (var i = 0; i < rules.length; i ++) {
                 if (rules[i].ports == 4004) {
                     return { result: 0 };
