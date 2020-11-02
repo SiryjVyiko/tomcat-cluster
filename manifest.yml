@@ -96,7 +96,7 @@ actions:
         var rules = jelastic.environment.security.GetRules(envName, session, nodeGroup, 'INPUT').rules;
         for (var i = 0; i < rules.length; i ++) {
             if (rules[i].ports == 4004) {
-                jelastic.environment.security.RemoveRule(envName, session, rules[i].id);
+                resp = jelastic.environment.security.RemoveRule(envName, session, rules[i].id);
                 if (!resp || resp.result !== 0) return resp;
             }
         }
