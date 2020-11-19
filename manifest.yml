@@ -88,6 +88,7 @@ actions:
             }
             return jelastic.environment.security.AddRule(envName, session, outputRule, nodeGroup);
           }
+          else { return { result: 0 }}
         }
         
   removeClusteringFirewallRule:
