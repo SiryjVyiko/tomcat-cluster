@@ -6,7 +6,7 @@ description:
   short: Tomcat Cluster Logic (Beta)                                                                                                                                                                                                                                 
 name: Tomcat Cluster Logic
 
-targetNodes: none
+permanent: true
 
 nodeGroupAlias: cp
 
@@ -62,8 +62,11 @@ onAfterRedeployContainer[cp]:
   
 onBeforeRemoveNode [cp]:
   if (nodes.cp.length == 1):
-    - script: delete MANIFEST.id; return {result:0, jps:MANIFEST};
-  
+    install:
+      type: update
+      name: tomcat-cluster
+      id: Tomcat Cluster Logic
+      
 actions:
   addClusteringFirewallRule:
     script: |
