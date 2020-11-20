@@ -49,7 +49,7 @@ onUninstall:
   - removeClusteringFirewallRule
   
 onAfterMigrate:
-  - cleanupNodes
+  - cleanupNodes: ${nodes.cp.join(id,)}
   - addNodes
   - cmd[cp]: jem service restart
   
@@ -124,7 +124,7 @@ actions:
     - cmd[cp]: jcm checkClusterConfig ${baseUrl}
     
   cleanupNodes:
-    - cmd[cp]: jcm cleanupNodes
+    - cmd[${this}]: jcm cleanupNodes
   
   applyHostName:
     - forEach(nodes.cp):
