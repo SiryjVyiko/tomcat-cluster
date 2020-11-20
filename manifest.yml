@@ -15,7 +15,7 @@ globals:
                                                                                                                                                                               
 onInstall:
   - installXmlUtility
-  - removeClusterConfig
+  - removeClusterConfig: ${nodes.cp.join(id,)}
   - applyClusterTemplate: ${nodes.cp.join(id,)}
   - addConfigToRedeployConf: ${nodes.cp.join(id,)}
   - applyHostName
@@ -32,6 +32,7 @@ onAfterScaleIn[cp]:
 
 onAfterScaleOut[cp]:
   - installXmlUtility: ${event.response.nodes.join(id,)}
+  - removeClusterConfig: ${event.response.nodes.join(id,)}
   - applyClusterTemplate: ${event.response.nodes.join(id,)}
   - addConfigToRedeployConf: ${nodes.cp.join(id,)}
   - applyHostName
@@ -118,7 +119,7 @@ actions:
       user: root
     
   removeClusterConfig:
-    - cmd[cp]: jcm removeClusterConfig
+    - cmd[${this}]: jcm removeClusterConfig
 
   checkClusterConfig:
     - cmd[cp]: jcm checkClusterConfig ${baseUrl}
