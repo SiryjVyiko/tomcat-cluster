@@ -8,7 +8,8 @@ name: Tomcat Cluster Logic
 
 permanent: true
 
-nodeGroupAlias: cp
+nodeGroupAlias:
+  ${settings.nodeGroup}: cp
 
 globals:
   serverConfig: /opt/tomcat/conf/server.xml
