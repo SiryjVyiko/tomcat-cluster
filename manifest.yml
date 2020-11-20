@@ -46,7 +46,7 @@ onAfterClone:
     envName: ${event.response.env.envName}
 
 onUninstall:
-  - removeClusterConfig
+  - removeClusterConfig: ${nodes.cp.join(id,)}
   - removeClusteringFirewallRule
   
 onAfterMigrate:
