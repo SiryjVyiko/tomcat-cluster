@@ -60,12 +60,12 @@ onAfterRedeployContainer[cp]:
   - addNodes
   - cmd[cp]: jem service restart
   
-onBeforeRemoveNode [cp]:
+onBeforeRemoveNode[cp]:
   if (nodes.cp.length == 1):
     install:
       type: update
-      name: tomcat-cluster
-      id: Tomcat Cluster Logic
+      id: tomcat-cluster
+      name: Tomcat Cluster Logic
       
 actions:
   addClusteringFirewallRule:
