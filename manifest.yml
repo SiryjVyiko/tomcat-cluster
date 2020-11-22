@@ -33,7 +33,6 @@ onAfterScaleIn[cp]:
 
 onAfterScaleOut[cp]:
   - installXmlUtility: ${event.response.nodes.join(id,)}
-  - removeClusterConfig: ${event.response.nodes.join(id,)}
   - applyClusterTemplate: ${event.response.nodes.join(id,)}
   - addConfigToRedeployConf: ${nodes.cp.join(id,)}
   - applyHostName
