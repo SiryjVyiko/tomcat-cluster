@@ -1,5 +1,5 @@
 type: update                                                                                                                                                                                                                    
-version: 1.6.1                                                                                                                                                                                                                  
+version: 1.8.1                                                                                                                                                                                                                  
 id: tomcat-cluster                                                                                                                                                                                                              
 baseUrl: https://raw.githubusercontent.com/SiryjVyiko/tomcat-cluster/master                                                                                                                                            
 description:                                                                                                                                                                                                                     
