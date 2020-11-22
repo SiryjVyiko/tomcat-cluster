@@ -28,8 +28,12 @@ applyClusterTemplate(){
         echo "No arguments supplied";
 	return 1;
     fi
-    xmlstarlet sel -Q -t -v "Server/Service/Engine/Cluster" ${SERVER_CONFIG} && sed -i '/LocalMember className /d' ${SERVER_CONFIG} || sed -i "/<\/Engine>/e curl ${1}/conf/cluster-general.tpl" ${SERVER_CONFIG};
-    addVersionSpecificConfig ${1}
+    if xmlstarlet sel -Q -t -v "Server/Service/Engine/Cluster" ${SERVER_CONFIG}; then 
+        sed -i '/LocalMember className /d' ${SERVER_CONFIG}
+    else
+        sed -i "/<\/Engine>/e curl ${1}/conf/cluster-general.tpl" ${SERVER_CONFIG}; 
+	addVersionSpecificConfig ${1};
+    fi	
 }
 
 removeNode(){
