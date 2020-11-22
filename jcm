@@ -28,7 +28,7 @@ applyClusterTemplate(){
         echo "No arguments supplied";
 	return 1;
     fi
-    sed -i "/<\/Engine>/e curl ${1}/conf/cluster-general.tpl" ${SERVER_CONFIG};
+    xmlstarlet sel -Q -t -v "Server/Service/Engine/Cluster" ${SERVER_CONFIG} || sed -i "/<\/Engine>/e curl ${1}/conf/cluster-general.tpl" ${SERVER_CONFIG};
     addVersionSpecificConfig ${1}
 }
 
