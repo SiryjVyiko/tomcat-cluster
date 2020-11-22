@@ -29,7 +29,7 @@ applyClusterTemplate(){
 	return 1;
     fi
     if xmlstarlet sel -Q -t -v "Server/Service/Engine/Cluster" ${SERVER_CONFIG}; then 
-        sed -i '/LocalMember className /d' ${SERVER_CONFIG}
+        sed -i "/LocalMember[[:space:]]*className/d" ${SERVER_CONFIG}
     else
         sed -i "/<\/Engine>/e curl ${1}/conf/cluster-general.tpl" ${SERVER_CONFIG}; 
 	addVersionSpecificConfig ${1};
