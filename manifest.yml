@@ -6,7 +6,7 @@ description:
   short: Tomcat Cluster Logic (Beta)                                                                                                                                                                                                                                 
 name: Tomcat Cluster Logic
 
-targetNodes: none
+permanent: true
 
 nodeGroupAlias:
   ${settings.nodeGroup}: cp
@@ -59,7 +59,7 @@ onAfterRedeployContainer[cp]:
   
 onBeforeRemoveNode[cp]:
   if (nodes.cp.length == 1):
-    install:
+    install [cp]:
       type: update
       id: tomcat-cluster
       name: Tomcat Cluster Logic
