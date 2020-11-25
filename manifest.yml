@@ -131,7 +131,7 @@ actions:
     - cmd[${this}]: jcm cleanupNodes
   
   applyHostName:
-    - cmd[${@i.id}]: jcm applyHostIpInConfig
+    - cmd[cp]: jcm applyHostIpInConfig
       user: root
       
   addNodes:
