@@ -6,7 +6,7 @@ description:
   short: Tomcat Cluster Logic (Beta)                                                                                                                                                                                                                                 
 name: Tomcat Cluster Logic
 
-targetNodes: none
+permanent: true
 
 nodeGroupAlias:
   ${settings.nodeGroup}: cp
