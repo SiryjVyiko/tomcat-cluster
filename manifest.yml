@@ -42,6 +42,8 @@ onAfterClone:
   - script: delete MANIFEST.id; return {result:0, jps:MANIFEST};
   - install: ${response.jps}
     envName: ${event.response.env.envName}
+    settings:
+      nodeGroup: ${settings.nodeGroup} 
 
 onUninstall:
   - removeClusterConfig: ${nodes.cp.join(id,)}
