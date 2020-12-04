@@ -13,6 +13,7 @@ nodeGroupAlias:
 
 globals:
   serverConfig: /opt/tomcat/conf/server.xml
+  customRulesFile: /etc/sysconfig/iptables-custom
                                                                                                                                                                               
 onInstall:
   - removeClusterConfig: ${nodes.cp.join(id,)}
@@ -118,9 +119,15 @@ actions:
             }
         }
         return { result: 0 }
+  
+  applyFirewallRule:
+    - cmd[${this}]: |-
+        echo -e "*filter\n-A INPUT -p tcp -m tcp --dport 4004 -j ACCEPT -m comment --comment \"Clustering\"" >> ${globals.customRulesFile}
+        echo -e "-A OUTPUT -p tcp -m tcp --dport 4004 -j ACCEPT -m comment --comment \"Clustering\"\nCOMMIT" >> ${globals.customRulesFile}
+      user: root
     
   applyClusterTemplate:
-    - cmd[${this}]:  jcm applyClusterTemplate ${baseUrl}
+    - cmd[${this}]: jcm applyClusterTemplate ${baseUrl}
       user: root
     
   removeClusterConfig:
