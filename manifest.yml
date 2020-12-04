@@ -125,7 +125,12 @@ actions:
         echo -e "*filter\n-A INPUT -p tcp -m tcp --dport 4004 -j ACCEPT -m comment --comment \"Clustering\"" >> ${globals.customRulesFile}
         echo -e "-A OUTPUT -p tcp -m tcp --dport 4004 -j ACCEPT -m comment --comment \"Clustering\"\nCOMMIT" >> ${globals.customRulesFile}
       user: root
-    
+
+  removeFirewallRule:
+    - cmd[${this}]: |-
+        sed -i '/dport 4004/d' >> ${globals.customRulesFile}
+      user: root
+
   applyClusterTemplate:
     - cmd[${this}]: jcm applyClusterTemplate ${baseUrl}
       user: root
