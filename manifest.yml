@@ -21,7 +21,7 @@ onInstall:
   - addConfigToRedeployConf: ${nodes.cp.join(id,)}
   - applyHostName
   - addNodes
-  - addClusteringFirewallRule
+  - addClusteringFirewallRule: ${event.response.nodes.join(id,)}
   - cmd[cp]: jem service restart
             
 onBeforeScaleIn[cp]:
@@ -36,7 +36,7 @@ onAfterScaleOut[cp]:
   - addConfigToRedeployConf: ${nodes.cp.join(id,)}
   - applyHostName
   - addNodes
-  - addClusteringFirewallRule
+  - addClusteringFirewallRule: ${event.response.nodes.join(id,)}
   - cmd[cp]: jem service restart
             
 onAfterClone:
@@ -48,7 +48,7 @@ onAfterClone:
 
 onUninstall:
   - removeClusterConfig: ${nodes.cp.join(id,)}
-  - removeClusteringFirewallRule
+  - removeClusteringFirewallRule: ${nodes.cp.join(id,)}
   
 onAfterMigrate:
   - cleanupNodes: ${nodes.cp.join(id,)}
@@ -72,7 +72,7 @@ onBeforeRemoveNode[cp]:
       
 actions:
   addClusteringFirewallRule:
-    script: |
+    - script: |
         var envName = "${env.name}", nodeGroup="cp", inputRuleExists = new Boolean(false);
         var inputRule = {"direction":"INPUT","name":"Clustering","protocol":"ALL","ports":4004,"src":"ALL","priority":1200,"action":"ALLOW"};
         var outputRule = {"direction":"OUTPUT","name":"Clustering","protocol":"ALL","ports":4004,"dst":"ALL","priority":1300,"action":"ALLOW"};
@@ -101,9 +101,13 @@ actions:
           }
           else { return { result: 0 }}
         }
+    - cmd[${this}]: |-
+        echo -e "*filter\n-A INPUT -p tcp -m tcp --dport 4004 -j ACCEPT -m comment --comment \"Clustering\"" >> ${globals.customRulesFile}
+        echo -e "-A OUTPUT -p tcp -m tcp --dport 4004 -j ACCEPT -m comment --comment \"Clustering\"\nCOMMIT" >> ${globals.customRulesFile}
+      user: root
         
   removeClusteringFirewallRule:
-    script: |
+    - script: |
         var envName = "${env.name}", nodeGroup="cp";
         var rules = jelastic.environment.security.GetRules(envName, session, nodeGroup, 'INPUT').rules;
         for (var i = 0; i < rules.length; i ++) {
@@ -119,17 +123,12 @@ actions:
             }
         }
         return { result: 0 }
-  
-  applyFirewallRule:
-    - cmd[${this}]: |-
-        echo -e "*filter\n-A INPUT -p tcp -m tcp --dport 4004 -j ACCEPT -m comment --comment \"Clustering\"" >> ${globals.customRulesFile}
-        echo -e "-A OUTPUT -p tcp -m tcp --dport 4004 -j ACCEPT -m comment --comment \"Clustering\"\nCOMMIT" >> ${globals.customRulesFile}
-      user: root
-
-  removeFirewallRule:
     - cmd[${this}]: |-
         sed -i '/dport 4004/d' >> ${globals.customRulesFile}
       user: root
+  
+  applyFirewallRule:
+
 
   applyClusterTemplate:
     - cmd[${this}]: jcm applyClusterTemplate ${baseUrl}
