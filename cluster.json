@@ -3,5 +3,8 @@
    "jps"         : "https://raw.githubusercontent.com/SiryjVyiko/tomcat-cluster/master/manifest.yml",
    "required"    : false,
    "defaultState": false,
-   "description" : "Tomcat HA test"
+   "description" : "Tomcat HA test",
+   "validation": {
+        "minCount": 2
+   }
 }
