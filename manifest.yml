@@ -21,7 +21,7 @@ onInstall:
   - addConfigToRedeployConf: ${nodes.cp.join(id,)}
   - applyHostName
   - addNodes
-  - addClusteringFirewallRule: ${event.response.nodes.join(id,)}
+  - addClusteringFirewallRule: ${nodes.cp.join(id,)}
   - cmd[cp]: jem service restart
             
 onBeforeScaleIn[cp]:
