@@ -48,7 +48,7 @@ onAfterClone:
 
 onUninstall:
   - removeClusterConfig: ${nodes.cp.join(id,)}
-  - removeClusteringFirewallRule: ${nodes.cp.join(id,)}
+  - removeClusteringFirewallRule
   
 onAfterMigrate:
   - cleanupNodes: ${nodes.cp.join(id,)}
@@ -123,12 +123,6 @@ actions:
             }
         }
         return { result: 0 }
-    - cmd[${this}]: |-
-        sed -i '/dport 4004/d' >> ${globals.customRulesFile}
-      user: root
-  
-  applyFirewallRule:
-
 
   applyClusterTemplate:
     - cmd[${this}]: jcm applyClusterTemplate ${baseUrl}
