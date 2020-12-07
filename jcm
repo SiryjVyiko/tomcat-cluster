@@ -3,7 +3,7 @@
 XMLSTARLET=$(which xmlstarlet) 
 ED_CMD="ed --inplace -P"
 SERVER_CONFIG="/opt/tomcat/conf/server.xml"
-SERVER_CONFIG="/opt/tomcat/conf/context.xml"
+CONTEXT_CONFIG="/opt/tomcat/conf/context.xml"
 REDEPLOY_CONF="/etc/jelastic/redeploy.conf"
 CURRENT_NODE_INTERNAL_IP=$(ip a | grep -A1 venet0 | grep inet | awk '{print $2}'| sed 's/\/[0-9]*//g' | tail -n 1)
 CLUSTER_XPATH="Server/Service/Engine/Cluster"
@@ -31,7 +31,7 @@ applyClusterTemplate(){
     fi
     xmlstarlet sel -Q -t -v "Server/Service/Engine/Cluster" ${SERVER_CONFIG} || { \
         sed -i "/<\/Engine>/e curl ${1}/conf/cluster-general.tpl" ${SERVER_CONFIG}; addVersionSpecificConfig ${1}; \
-	xmlstarlet ${ED_CMD} -i "Context" -t attr -n className -v org.apache.catalina.ha.context.ReplicatedContext context.xml; }
+	xmlstarlet ${ED_CMD} -i "Context" -t attr -n className -v org.apache.catalina.ha.context.ReplicatedContext ${CONTEXT_CONFIG}; }
 }
 
 removeNode(){
