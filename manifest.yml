@@ -22,7 +22,6 @@ onInstall:
   - applyHostName
   - addNodes
   - addFWRuleForEnv
-  - addFWRuleForContainer: ${nodes.cp.join(id,)}
   - cmd[cp]: jem service restart
             
 onBeforeScaleIn[cp]:
@@ -37,7 +36,6 @@ onAfterScaleOut[cp]:
   - addConfigToRedeployConf: ${nodes.cp.join(id,)}
   - applyHostName
   - addNodes
-  - addFWRuleForContainer: ${event.response.nodes.join(id,)}
   - cmd[cp]: jem service restart
             
 onAfterClone:
