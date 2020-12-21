@@ -37,7 +37,6 @@ onAfterScaleOut[cp]:
   - addConfigToRedeployConf: ${nodes.cp.join(id,)}
   - applyHostName
   - addNodes
-  - addFWRuleForEnv
   - addFWRuleForContainer: ${event.response.nodes.join(id,)}
   - cmd[cp]: jem service restart
             
