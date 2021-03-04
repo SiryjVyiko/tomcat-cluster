@@ -111,6 +111,7 @@ actions:
             echo -e "*filter\n-A INPUT -p tcp -m tcp --dport 4004 -j ACCEPT -m comment --comment \"Tomcat/TomEE Clustering\"" >> ${globals.customRulesFile}
             echo -e "-A OUTPUT -p tcp -m tcp --dport 4004 -j ACCEPT -m comment --comment \"Tomcat/TomEE Clustering\"\nCOMMIT" >> ${globals.customRulesFile}
         fi
+      user: root
         
   removeClusteringFirewallRule:
     - script: |
