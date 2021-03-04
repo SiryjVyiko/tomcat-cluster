@@ -105,7 +105,7 @@ actions:
         
   addFWRuleForContainer:
     - cmd[${this}]: |-
-        if ! grep -q "Tomcat\/TomEE Clustering" ${globals.customRulesFile}; then
+        if ! grep -q "4004.*Clustering" ${globals.customRulesFile}; then
             echo -e "*filter\n-A INPUT -p tcp -m tcp --dport 4004 -j ACCEPT -m comment --comment \"Tomcat/TomEE Clustering\"" >> ${globals.customRulesFile}
             echo -e "-A OUTPUT -p tcp -m tcp --dport 4004 -j ACCEPT -m comment --comment \"Tomcat/TomEE Clustering\"\nCOMMIT" >> ${globals.customRulesFile}
         fi
