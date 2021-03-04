@@ -16,6 +16,7 @@ globals:
   customRulesFile: /etc/sysconfig/iptables-custom
                                                                                                                                                                               
 onInstall:
+  - cmd[cp]: sed -i "/4004.*Tomcat\/TomEE Clustering/d" ${globals.customRulesFile}
   - removeClusterConfig: ${nodes.cp.join(id,)}
   - applyClusterTemplate: ${nodes.cp.join(id,)}
   - addConfigToRedeployConf: ${nodes.cp.join(id,)}
