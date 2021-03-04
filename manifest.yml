@@ -16,7 +16,7 @@ globals:
   customRulesFile: /etc/sysconfig/iptables-custom
                                                                                                                                                                               
 onInstall:
-  - cmd[cp]: sed -i "/4004.*Tomcat\/TomEE Clustering/d" ${globals.customRulesFile}
+  - cmd[cp]: sed -ci -e "/4004.*Tomcat\/TomEE Clustering/d" ${globals.customRulesFile}
     user: root
   - removeClusterConfig: ${nodes.cp.join(id,)}
   - applyClusterTemplate: ${nodes.cp.join(id,)}
@@ -111,7 +111,6 @@ actions:
             echo -e "*filter\n-A INPUT -p tcp -m tcp --dport 4004 -j ACCEPT -m comment --comment \"Tomcat/TomEE Clustering\"" >> ${globals.customRulesFile}
             echo -e "-A OUTPUT -p tcp -m tcp --dport 4004 -j ACCEPT -m comment --comment \"Tomcat/TomEE Clustering\"\nCOMMIT" >> ${globals.customRulesFile}
         fi
-      user: root
         
   removeClusteringFirewallRule:
     - script: |
