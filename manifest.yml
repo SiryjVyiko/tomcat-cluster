@@ -17,6 +17,7 @@ globals:
                                                                                                                                                                               
 onInstall:
   - cmd[cp]: sed -i "/4004.*Tomcat\/TomEE Clustering/d" ${globals.customRulesFile}
+    user: root
   - removeClusterConfig: ${nodes.cp.join(id,)}
   - applyClusterTemplate: ${nodes.cp.join(id,)}
   - addConfigToRedeployConf: ${nodes.cp.join(id,)}
