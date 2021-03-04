@@ -85,17 +85,18 @@ actions:
             var rules = jelastic.environment.security.GetRules(envName, session, nodeGroup, 'INPUT').rules;
             for (var i = 0; i < rules.length; i ++) {
                 if (rules[i].ports == 4004) {
-                    inputRuleExists = true;
+                    resp = jelastic.environment.security.RemoveRule(envName, session, rules[i].id);
+                    if (!resp || resp.result !== 0) return resp;
                 }
             }
-            if (inputRuleExists == false){
-                resp = jelastic.environment.security.AddRule(envName, session, inputRule, nodeGroup);
-                if (!resp || resp.result !== 0) return resp;
+            resp = jelastic.environment.security.AddRule(envName, session, inputRule, nodeGroup);
+            if (!resp || resp.result !== 0) return resp;
             }
             var rules = jelastic.environment.security.GetRules(envName, session, nodeGroup, 'OUTPUT').rules;
             for (var i = 0; i < rules.length; i ++) {
                 if (rules[i].ports == 4004) {
-                    return { result: 0 };
+                    resp = jelastic.environment.security.RemoveRule(envName, session, rules[i].id);
+                    if (!resp || resp.result !== 0) return resp;
                 }
             }
             return jelastic.environment.security.AddRule(envName, session, outputRule, nodeGroup);
