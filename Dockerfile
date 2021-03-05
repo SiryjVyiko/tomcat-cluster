@@ -1,4 +1,4 @@
-FROM devbeta.d.jele.io/tomeeha:7.0.5-plume-openjdk-1.8.0_181 
+FROM devbeta.d.jele.io/tomcatha:7.0.105-jdk-1.8.0_202
 
 ADD jcm /usr/local/sbin/jcm
 
@@ -10,4 +10,4 @@ LABEL actions="customSSL webAccess" \
     nodeTypeAlias=tomeeha \
     name="TomEE HA" \
     deprecated="true" \
-    cluster=https://raw.githubusercontent.com/SiryjVyiko/tomcat-cluster/master/cluster.json
+    cluster=https://raw.githubusercontent.com/SiryjVyiko/tomcat-cluster/master/cluster-tomcat.json
