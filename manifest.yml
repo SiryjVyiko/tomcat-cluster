@@ -146,7 +146,7 @@ actions:
  
   cleanupCustomFWRules:
     - cmd[${this}]: sed -ci -e "/4004.*Tomcat\/TomEE Clustering/d" ${globals.customRulesFile}; sed -ci -e "/4004.*Tomcat\/TomEE Clustering/d" ${globals.mainRulesFile};
-    user: root
+      user: root
   
   applyHostName:
     - cmd[cp]: jcm applyHostIpInConfig
