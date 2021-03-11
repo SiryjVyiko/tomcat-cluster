@@ -17,8 +17,7 @@ globals:
   customRulesFile: /etc/sysconfig/iptables-custom
                                                                                                                                                                               
 onInstall:
-  - cmd[cp]: sed -ci -e "/4004.*Tomcat\/TomEE Clustering/d" ${globals.customRulesFile}
-    user: root
+  - cleanupCustomFWRules: ${nodes.cp.join(id,)}
   - removeClusterConfig: ${nodes.cp.join(id,)}
   - applyClusterTemplate: ${nodes.cp.join(id,)}
   - addConfigToRedeployConf: ${nodes.cp.join(id,)}
@@ -36,8 +35,7 @@ onAfterScaleIn[cp]:
   - cmd[cp]: jem service restart
 
 onAfterScaleOut[cp]:
-  - cmd[${nodes.cp.join(id,)}]: sed -ci -e "/4004.*Tomcat\/TomEE Clustering/d" ${globals.customRulesFile}; sed -ci -e "/4004.*Tomcat\/TomEE Clustering/d" ${globals.mainRulesFile};
-    user: root
+  - cleanupCustomFWRules: ${event.response.nodes.join(id,)}
   - applyClusterTemplate: ${event.response.nodes.join(id,)}
   - addConfigToRedeployConf: ${nodes.cp.join(id,)}
   - applyHostName
@@ -145,6 +143,10 @@ actions:
     
   cleanupNodes:
     - cmd[${this}]: jcm cleanupNodes
+ 
+  cleanupCustomFWRules:
+    - cmd[${this}]: sed -ci -e "/4004.*Tomcat\/TomEE Clustering/d" ${globals.customRulesFile}; sed -ci -e "/4004.*Tomcat\/TomEE Clustering/d" ${globals.mainRulesFile};
+    user: root
   
   applyHostName:
     - cmd[cp]: jcm applyHostIpInConfig
