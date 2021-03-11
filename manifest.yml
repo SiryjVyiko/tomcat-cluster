@@ -147,8 +147,8 @@ actions:
   cleanupCustomFWRules: 
     - cmd[${this}]: |-
         sed -ci -e "/4004.*Tomcat\/TomEE Clustering/d" ${globals.mainRulesFile};
-        sed -ci -e "/4004.*Tomcat\/TomEE Clustering/d" ${globals.customRulesFile};
-        service iptables restart
+        service iptables restart;
+        sed -ci -e "/4004.*Tomcat\/TomEE Clustering/d" ${globals.customRulesFile}
       user: root
   
   applyHostName:
