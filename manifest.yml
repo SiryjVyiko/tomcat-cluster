@@ -144,8 +144,11 @@ actions:
   cleanupNodes:
     - cmd[${this}]: jcm cleanupNodes
  
-  cleanupCustomFWRules:
-    - cmd[${this}]: sed -ci -e "/4004.*Tomcat\/TomEE Clustering/d" ${globals.customRulesFile}; sed -ci -e "/4004.*Tomcat\/TomEE Clustering/d" ${globals.mainRulesFile};
+  cleanupCustomFWRules: |-
+    - cmd[${this}]: 
+        sed -ci -e "/4004.*Tomcat\/TomEE Clustering/d" ${globals.customRulesFile}; 
+        sed -ci -e "/4004.*Tomcat\/TomEE Clustering/d" ${globals.mainRulesFile};
+        service iptables restart;
       user: root
   
   applyHostName:
