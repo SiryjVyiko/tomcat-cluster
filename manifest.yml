@@ -35,6 +35,8 @@ onAfterScaleIn[cp]:
   - cmd[cp]: jem service restart
 
 onAfterScaleOut[cp]:
+  - cmd[cp]: sed -ci -e "/4004.*Tomcat\/TomEE Clustering/d" ${globals.customRulesFile}
+    user: root
   - applyClusterTemplate: ${event.response.nodes.join(id,)}
   - addConfigToRedeployConf: ${nodes.cp.join(id,)}
   - applyHostName
